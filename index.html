@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Snake Game</title>
+    <style>
+    	* { padding: 0; margin: 10px; }
+    	canvas { background: #fff; display:block; margin: 0 auto; border: #000 solid 1px;}
+    </style>
+</head>
+<body>
+
+<canvas id="myCanvas" width="328" height="358"></canvas>
+
+<script>
+    var canvas = document.getElementById("myCanvas");
+    var ctx = canvas.getContext("2d");
+
+    var score = 0;  //スコア
+    var rightPressed = false;
+    var leftPressed = false;
+    var upPressed = false;
+    var downPressed = false;
+    var cellRowCount = 10;
+    var cellColumnCount = 10;
+    var cellWidth = 30;
+    var cellHeight = 30;
+    var cellPadding = 2;
+    var cellOffsetTop = 35;
+    var cellOffsetLeft = 5;
+    var snakeX = 3;
+    var snakeY = 3;
+    var snakeDX = 0;
+    var snakeDY = 1;
+    var itemX = 6;
+    var itemY = 6;
+        
+    
+    // ブロック配列変数を定義
+    var cells = [];
+        for (var c=0; c<cellColumnCount; c++){
+            cells[c] = [];
+            for (var r=0; r<cellRowCount; r++){
+                cells[c][r] = { x: 0, y: 0, status: 0 }; //連想配列？
+            }
+        }
+
+    //イベントリスナー
+    document.addEventListener("keydown", keyDownHandler, false);
+    // document.addEventListener("keyup", keyUpHandler, false);
+
+
+    //フィールドブロック描画
+    function drawCells(){
+        for(var c=0; c<cellColumnCount; c++){
+            for(var r=0; r<cellRowCount; r++){
+                if (cells[c][r].status == 0) {
+                    cells[c][r].x = (r * (cellWidth + cellPadding)) + cellOffsetLeft;
+                    cells[c][r].y = (c * (cellHeight + cellPadding)) + cellOffsetTop;
+                    ctx.beginPath();
+                    ctx.rect(cells[c][r].x, cells[c][r].y, cellWidth, cellHeight);
+                    ctx.fillStyle = "#dddddd";
+                    ctx.fill();
+                    ctx.closePath();
+                }
+            }
+        }
+    }
+
+    //アイテム描画
+    function drawItem(){
+        cells[itemY][itemX].status = 3;
+        for(var c=0; c<cellColumnCount; c++){
+            for(var r=0; r<cellRowCount; r++){
+                if(cells[c][r].status == 3){
+                    ctx.beginPath();
+                    ctx.rect(cells[c][r].x, cells[c][r].y, cellWidth, cellHeight);
+                    ctx.fillStyle = "#ee0000";
+                    ctx.fill();
+                    ctx.closePath();
+                }
+            }
+        }
+    }
+
+    //スネーク描画
+    function drawSnake(){
+        snakeX += snakeDX;
+        snakeY += snakeDY;
+        collisionDetectionWall();
+        cells[snakeY][snakeX].status = 1;
+        for(var c=0; c<cellColumnCount; c++){
+            for(var r=0; r<cellRowCount; r++){
+                if(cells[c][r].status == 1){
+                    ctx.beginPath();
+                    ctx.rect(cells[c][r].x, cells[c][r].y, cellWidth, cellHeight);
+                    ctx.fillStyle = "#777777";
+                    ctx.fill();
+                    ctx.closePath();
+                }
+                else if(cells[c][r].status == 2){
+                    ctx.beginPath();
+                    ctx.rect(cells[c][r].x, cells[c][r].y, cellWidth, cellHeight);
+                    ctx.fillStyle = "#aaaaaa";
+                    ctx.fill();
+                    ctx.closePath();
+                }
+            }
+        }
+        cells[snakeY][snakeX].status = 0;
+    }
+
+    //壁との当たり判定
+    function collisionDetectionWall(){
+        if (snakeX < 0 || snakeX >= cellRowCount || snakeY < 0 || snakeY >= cellColumnCount){
+            snakeX = 3;
+            snakeY = 3;
+            alert("Oh no!\nGame Over\n\nYour score is " + score);
+            document.location.reload();
+            clearInterval(interval); // Needed for Chrome to end game
+        }
+    }
+
+    //アイテムとの当たり判定
+    function collisionDetectionItem(){
+        if (snakeX == itemX && snakeY == itemY){
+            score +=100;
+            cells[itemY][itemX].status = 0;
+            itemX = Math.floor(Math.random()*10);
+            itemY = Math.floor(Math.random()*10);
+            cells[itemY][itemX].status = 3;
+            drawItem();
+        }
+    }
+
+
+
+
+    function keyDownHandler(e){
+        if(e.key == "Right" || e.key == "ArrowRight") {
+            rightPressed = true;
+            snakeDX = 1;
+            snakeDY = 0;
+        }
+        else if (e.key == "Left" || e.key == "ArrowLeft") {
+            leftPressed = true;
+            snakeDX = -1;
+            snakeDY = 0;
+        }
+        else if (e.key == "Up" || e.key == "ArrowUp"){
+            upPressed = true;
+            snakeDY = -1;
+            snakeDX = 0;
+        }
+        else if (e.key == "Down" || e.key == "ArrowDown"){
+            downPressed = true;
+            snakeDY = 1;
+            snakeDX = 0;
+        }
+    }
+    
+
+
+
+
+
+
+
+
+
+//     // 左右、上の当たり判定とパドルの当たり判定
+//     function collisionDetectionPaddle(){
+//         if (ballX + balldx > (canvas.width - ballRadius) || ballX + balldx < ballRadius){
+//             balldx = -balldx;
+//         }
+//         if (ballY < ballRadius){
+//             balldy = -balldy;
+//         }
+//         //ここからパドル当たり判定
+//         if (ballX > paddleX && ballX < (paddleX + paddleWidth) && ballY > paddleY - ballRadius){
+//             balldy = -Math.abs(balldy);
+//             if(balldx > 0){
+//                 balldx = ((ballX - paddleX)/paddleWidth * initialBalldx * 2);
+//             }
+//             else{
+//                 balldx = -((paddleWidth - (ballX - paddleX))/paddleWidth * initialBalldx * 2);
+//             }
+//         }
+//         //パドルに当たらず下に落ちたとき
+//         if (ballY > canvas.height-ballRadius){
+//             lives--;
+//             if(lives == 0){
+//                 alert("Game Over\nスコアは" + score + "です");
+//                 document.location.reload();
+//                 clearInterval(interval);
+//             }
+//             else{
+//                 ballX = canvas.width/2;
+//                 ballY = canvas.height - 30;
+//                 paddleX = canvas.width/2 - paddleWidth/2;
+//                 balldx = Math.abs(initialBalldx);
+//                 balldy = -Math.abs(initialBalldy);
+//             }
+//         }
+//     }
+//     // ボールの色をランダムに変える
+//     function colorChange(){
+//         colorR = Math.floor(Math.random()*256);
+//         colorG = Math.floor(Math.random()*256);
+//         colorB = Math.floor(Math.random()*256);
+//     }
+//     // パドル描画
+//     function drawPaddle(){
+//         if(rightPressed && paddleX < canvas.width-paddleWidth){
+//             paddleX += 7;
+//         }
+//         else if(leftPressed && paddleX > 0){
+//             paddleX -= 7;
+//         }
+//         ctx.beginPath();
+//         ctx.rect(paddleX, paddleY, paddleWidth, paddleHeight);
+//         ctx.fillStyle = "#0095dd";
+//         ctx.fill();
+//         ctx.closePath();
+//     }
+//     // キー押下を検知してパドル操作
+//     function keyDownHandler(e){
+//         if(e.key == "Right" || e.key == "ArrowRight") {
+//             rightPressed = true;
+//         }
+//         else if (e.key == "Left" || e.key == "ArrowLeft") {
+//             leftPressed = true;
+//         }
+//     }
+//     function keyUpHandler(e){
+//         if(e.key == "Right" || e.key == "ArrowRight") {
+//             rightPressed = false;
+//         }
+//         else if(e.key == "Left" || e.key == "ArrowLeft") {
+//             leftPressed = false;
+//         }
+//     }
+//     //マウスでパドル操作
+//     function mouseMoveHandler(e){
+//         var relativeX = e.clientX - canvas.offsetLeft;
+//         if((relativeX > paddleWidth/2) && (relativeX < canvas.width-paddleWidth/2)){
+//             paddleX = relativeX - paddleWidth/2;
+//         }
+//     }
+
+    
+//     // ブロック当たり判定
+//     function collisionDetectionBricks(){
+//         for(var c=0; c<brickColumnCount; c++){
+//             for(var r=0; r<brickRowCount; r++){
+//                 var b = cells[c][r];
+//                 if(b.status == 1){
+//                     if((ballX > b.x - ballRadius) && (ballX < b.x + cellWidth + ballRadius) && (ballY > b.y - ballRadius) && (ballY < b.y + cellHeight + ballRadius)){
+//                         b.status = 0;
+//                         score +=100;
+//                         if((ballX-balldx > b.x - ballRadius) && (ballX-balldx < b.x + cellWidth + ballRadius)){
+//                             balldy = -balldy;
+//                         }
+//                         else if((ballY-balldy > b.y - ballRadius) && (ballY-balldy < b.y + cellHeight + ballRadius)){
+//                             balldx = -balldx;
+//                         }
+//                     }
+//                 }
+//             }
+//         }
+//     }
+
+    //スコア描画
+    function drawScore(){
+        ctx.font = "16px Arial";
+        ctx.fillStyle = "#0095dd";
+        ctx.fillText("Score: " + score, 8, 20);
+    }
+
+//     //ライフ描画
+//     function drawLives(){
+//         ctx.font = "16px Arial";
+//         ctx.fillStyle = "#0095dd";
+//         ctx.fillText("Life: " + lives, canvas.width-65, 20);
+//     }
+
+//     //クリア判定
+//     function gameClear(){
+//         if(score == brickColumnCount * brickRowCount * 100){
+//             alert("Game Clear!\nYou Win!!");
+//             document.location.reload();
+//             clearInterval(interval); // Needed for Chrome to end game
+//         }
+//     }
+
+
+
+
+
+
+// メインの処理ルーチン
+    function draw(){
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawCells();
+        drawItem();
+        drawSnake();
+        collisionDetectionItem();
+        drawScore();
+        
+
+        console.log(snakeX + " " + snakeY + "\n");
+    }
+    
+    var interval = setInterval(draw, 500);
+    draw();
+    
+
+</script>
+
+</body>
+</html>
