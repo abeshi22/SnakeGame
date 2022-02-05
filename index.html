@@ -92,13 +92,15 @@
     }
 
     //スネーク描画
-    function drawSnake(){        
+    function drawSnake(){
+        //ここからスネークの体部分の座標の処理        
         for (var i=snakeLength; i>0; i--){
             snakeBody[i].x = snakeBody[i-1].x;
             snakeBody[i].y = snakeBody[i-1].y;
         }
         snakeBody[0].x = snakeX;
         snakeBody[0].y = snakeY;
+        //ここまで
 
         snakeX += snakeDX;
         snakeY += snakeDY;
@@ -119,6 +121,7 @@
         cells[snakeY][snakeX].status = 0;
     }
 
+    //スネークの体部分描画
     function drawSnakeBody(){
         for (var i=0; i<snakeLength; i++){
             ctx.beginPath();
@@ -150,6 +153,17 @@
             itemY = Math.floor(Math.random()*10);
             cells[itemY][itemX].status = 3;
             drawItem();
+        }
+    }
+
+    //頭と体の当たり判定
+    function collisionDetectionBody(){
+        for (var i=0; i<snakeLength; i++){
+            if (snakeX == snakeBody[i].x && snakeY == snakeBody[i].y){
+                alert("Ouch!\nGame Over\n\nYour score is " + score);
+                document.location.reload();
+                clearInterval(interval); // Needed for Chrome to end game
+            }
         }
     }
 
@@ -211,6 +225,7 @@
         drawItem();
         drawSnake();
         collisionDetectionItem();
+        collisionDetectionBody();
         drawScore();
         
 
