@@ -168,106 +168,7 @@
 
 
 
-//     // 左右、上の当たり判定とパドルの当たり判定
-//     function collisionDetectionPaddle(){
-//         if (ballX + balldx > (canvas.width - ballRadius) || ballX + balldx < ballRadius){
-//             balldx = -balldx;
-//         }
-//         if (ballY < ballRadius){
-//             balldy = -balldy;
-//         }
-//         //ここからパドル当たり判定
-//         if (ballX > paddleX && ballX < (paddleX + paddleWidth) && ballY > paddleY - ballRadius){
-//             balldy = -Math.abs(balldy);
-//             if(balldx > 0){
-//                 balldx = ((ballX - paddleX)/paddleWidth * initialBalldx * 2);
-//             }
-//             else{
-//                 balldx = -((paddleWidth - (ballX - paddleX))/paddleWidth * initialBalldx * 2);
-//             }
-//         }
-//         //パドルに当たらず下に落ちたとき
-//         if (ballY > canvas.height-ballRadius){
-//             lives--;
-//             if(lives == 0){
-//                 alert("Game Over\nスコアは" + score + "です");
-//                 document.location.reload();
-//                 clearInterval(interval);
-//             }
-//             else{
-//                 ballX = canvas.width/2;
-//                 ballY = canvas.height - 30;
-//                 paddleX = canvas.width/2 - paddleWidth/2;
-//                 balldx = Math.abs(initialBalldx);
-//                 balldy = -Math.abs(initialBalldy);
-//             }
-//         }
-//     }
-//     // ボールの色をランダムに変える
-//     function colorChange(){
-//         colorR = Math.floor(Math.random()*256);
-//         colorG = Math.floor(Math.random()*256);
-//         colorB = Math.floor(Math.random()*256);
-//     }
-//     // パドル描画
-//     function drawPaddle(){
-//         if(rightPressed && paddleX < canvas.width-paddleWidth){
-//             paddleX += 7;
-//         }
-//         else if(leftPressed && paddleX > 0){
-//             paddleX -= 7;
-//         }
-//         ctx.beginPath();
-//         ctx.rect(paddleX, paddleY, paddleWidth, paddleHeight);
-//         ctx.fillStyle = "#0095dd";
-//         ctx.fill();
-//         ctx.closePath();
-//     }
-//     // キー押下を検知してパドル操作
-//     function keyDownHandler(e){
-//         if(e.key == "Right" || e.key == "ArrowRight") {
-//             rightPressed = true;
-//         }
-//         else if (e.key == "Left" || e.key == "ArrowLeft") {
-//             leftPressed = true;
-//         }
-//     }
-//     function keyUpHandler(e){
-//         if(e.key == "Right" || e.key == "ArrowRight") {
-//             rightPressed = false;
-//         }
-//         else if(e.key == "Left" || e.key == "ArrowLeft") {
-//             leftPressed = false;
-//         }
-//     }
-//     //マウスでパドル操作
-//     function mouseMoveHandler(e){
-//         var relativeX = e.clientX - canvas.offsetLeft;
-//         if((relativeX > paddleWidth/2) && (relativeX < canvas.width-paddleWidth/2)){
-//             paddleX = relativeX - paddleWidth/2;
-//         }
-//     }
 
-    
-//     // ブロック当たり判定
-//     function collisionDetectionBricks(){
-//         for(var c=0; c<brickColumnCount; c++){
-//             for(var r=0; r<brickRowCount; r++){
-//                 var b = cells[c][r];
-//                 if(b.status == 1){
-//                     if((ballX > b.x - ballRadius) && (ballX < b.x + cellWidth + ballRadius) && (ballY > b.y - ballRadius) && (ballY < b.y + cellHeight + ballRadius)){
-//                         b.status = 0;
-//                         score +=100;
-//                         if((ballX-balldx > b.x - ballRadius) && (ballX-balldx < b.x + cellWidth + ballRadius)){
-//                             balldy = -balldy;
-//                         }
-//                         else if((ballY-balldy > b.y - ballRadius) && (ballY-balldy < b.y + cellHeight + ballRadius)){
-//                             balldx = -balldx;
-//                         }
-//                     }
-//                 }
-//             }
-//         }
 //     }
 
     //スコア描画
@@ -277,21 +178,6 @@
         ctx.fillText("Score: " + score, 8, 20);
     }
 
-//     //ライフ描画
-//     function drawLives(){
-//         ctx.font = "16px Arial";
-//         ctx.fillStyle = "#0095dd";
-//         ctx.fillText("Life: " + lives, canvas.width-65, 20);
-//     }
-
-//     //クリア判定
-//     function gameClear(){
-//         if(score == brickColumnCount * brickRowCount * 100){
-//             alert("Game Clear!\nYou Win!!");
-//             document.location.reload();
-//             clearInterval(interval); // Needed for Chrome to end game
-//         }
-//     }
 
 
 
