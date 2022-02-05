@@ -34,16 +34,24 @@
     var snakeDY = 1;
     var itemX = 6;
     var itemY = 6;
-        
-    
+    var snakeLength = 1;
+
+
     // ブロック配列変数を定義
     var cells = [];
         for (var c=0; c<cellColumnCount; c++){
             cells[c] = [];
             for (var r=0; r<cellRowCount; r++){
-                cells[c][r] = { x: 0, y: 0, status: 0 }; //連想配列？
+                cells[c][r] = { x: 0, y: 0, status: 0 }; //連想配列
             }
         }
+    
+    var snakeBody = [];
+    for(var i=0; i<cellColumnCount*cellRowCount; i++){
+        snakeBody[i] = {x:0, y:0};
+    }
+    snakeBody[0] = { x: snakeX, y: snakeY};
+    snakeBody[1] = { x: snakeX, y: snakeY};
 
     //イベントリスナー
     document.addEventListener("keydown", keyDownHandler, false);
@@ -84,7 +92,14 @@
     }
 
     //スネーク描画
-    function drawSnake(){
+    function drawSnake(){        
+        for (var i=snakeLength; i>0; i--){
+            snakeBody[i].x = snakeBody[i-1].x;
+            snakeBody[i].y = snakeBody[i-1].y;
+        }
+        snakeBody[0].x = snakeX;
+        snakeBody[0].y = snakeY;
+
         snakeX += snakeDX;
         snakeY += snakeDY;
         collisionDetectionWall();
@@ -94,20 +109,24 @@
                 if(cells[c][r].status == 1){
                     ctx.beginPath();
                     ctx.rect(cells[c][r].x, cells[c][r].y, cellWidth, cellHeight);
-                    ctx.fillStyle = "#777777";
-                    ctx.fill();
-                    ctx.closePath();
-                }
-                else if(cells[c][r].status == 2){
-                    ctx.beginPath();
-                    ctx.rect(cells[c][r].x, cells[c][r].y, cellWidth, cellHeight);
-                    ctx.fillStyle = "#aaaaaa";
+                    ctx.fillStyle = "#008000";
                     ctx.fill();
                     ctx.closePath();
                 }
             }
         }
+        drawSnakeBody();
         cells[snakeY][snakeX].status = 0;
+    }
+
+    function drawSnakeBody(){
+        for (var i=0; i<snakeLength; i++){
+            ctx.beginPath();
+            ctx.rect((snakeBody[i].x * (cellWidth+cellPadding) + cellOffsetLeft), (snakeBody[i].y * (cellHeight+cellPadding) + cellOffsetTop), cellWidth, cellHeight);
+            ctx.fillStyle = "#90ee90";
+            ctx.fill();
+            ctx.closePath();
+        }
     }
 
     //壁との当たり判定
@@ -125,6 +144,7 @@
     function collisionDetectionItem(){
         if (snakeX == itemX && snakeY == itemY){
             score +=100;
+            snakeLength++;
             cells[itemY][itemX].status = 0;
             itemX = Math.floor(Math.random()*10);
             itemY = Math.floor(Math.random()*10);
@@ -194,7 +214,7 @@
         drawScore();
         
 
-        console.log(snakeX + " " + snakeY + "\n");
+        console.log(snakeX + " " + snakeY + " " + snakeBody[0].x + " " + snakeBody[0].y + " " + snakeLength +"\n");
     }
     
     var interval = setInterval(draw, 500);
